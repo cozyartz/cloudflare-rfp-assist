@@ -1,8 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class',
+  content: [
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}'
+  ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        assistant: '#14532d',
+        user: '#1e3a8a',
+      }
+    },
   },
   plugins: [],
-};
+}

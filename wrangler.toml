@@ -23,4 +23,4 @@ preview_bucket_name = "rfp-files"
 R2_BUCKET = "rfp-files"
 
 [build]
-command = "esbuild --bundle --external:pdfjs-dist --external:mammoth ./functions/fileParsers.js --outfile=./dist/fileParsers.js"
+command = "pnpm build"
