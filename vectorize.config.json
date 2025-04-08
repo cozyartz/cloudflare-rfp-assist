@@ -1,0 +1,21 @@
+{
+    "name": "company-profiles-index",
+    "description": "Vector index for all Cozyartz, BCD, and AstroPraxis profile data",
+    "r2_bucket": "company-info",
+    "r2_key": "r2_company_profiles.json",
+    "binding": "VECTORIZE",
+    "model": "@cf/baai/bge-base-en-v1.5",
+    "format": "json",
+    "dimensions": 768,
+    "metric": "cosine",
+    "chunking": {
+      "strategy": "json-path",
+      "paths": [
+        "$.businesses[*].description",
+        "$.businesses[*].services[*]",
+        "$.businesses[*].valuePropositions[*]",
+        "$.businesses[*].notableProjects[*].impact",
+        "$.businesses[*].team[*].qualifications[*]"
+      ]
+    }
+  }

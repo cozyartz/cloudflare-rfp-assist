@@ -1,0 +1,26 @@
+# Node + pnpm
+node_modules/
+pnpm-lock.yaml
+
+# Vite build output
+dist/
+
+# Local environment files
+.env
+.env.*.local
+.dev.vars
+*.local
+
+# macOS system files
+.DS_Store
+
+# Cloudflare logs
+.wrangler/logs/
+
+# VSCode/editor stuff
+.vscode/
+.idea/
+*.code-workspace
+
+# Misc
+.cache/

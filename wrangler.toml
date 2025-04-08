@@ -1,0 +1,26 @@
+name = "rfp-assistant"
+account_id = "YOUR_ACCOUNT_ID"
+compatibility_date = "2024-04-07"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# If using the Pages functions directory structure
+pages_build_output_dir = "./dist"
+
+# Optional: If you're running locally with functions/ask-rag.js
+# main = "functions/ask-rag.js"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "company-profiles-index"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "rfp-files"
+preview_bucket_name = "rfp-files"
+
+[vars]
+R2_BUCKET = "rfp-files"
+
+[build]
+command = "esbuild --bundle --external:pdfjs-dist --external:mammoth ./functions/fileParsers.js --outfile=./dist/fileParsers.js"
