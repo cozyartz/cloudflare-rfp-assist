@@ -1,5 +1,6 @@
 # Node + pnpm
 node_modules/
+.DS_Store
 pnpm-lock.yaml
 
 # Vite build output
@@ -10,9 +11,6 @@ dist/
 .env.*.local
 .dev.vars
 *.local
-
-# macOS system files
-.DS_Store
 
 # Cloudflare logs
 .wrangler/logs/

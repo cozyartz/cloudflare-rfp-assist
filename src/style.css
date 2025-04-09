@@ -2,18 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-  @apply bg-gray-900 text-white font-sans h-full w-full;
+/* Custom base styles */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Chat message bubbles */
+.message {
+  @apply max-w-3xl mx-auto my-2 px-4 py-3 rounded-xl leading-relaxed whitespace-pre-line;
 }
 
 .message.user {
-  @apply bg-blue-600 text-white text-sm rounded-lg p-3 ml-auto max-w-xl;
+  @apply text-white self-end;
+  background-color: #1e3a8a; /* fallback for bg-user */
 }
 
 .message.assistant {
-  @apply bg-green-700 text-white text-sm rounded-lg p-3 mr-auto max-w-xl;
+  @apply text-white self-start;
+  background-color: #14532d; /* fallback for bg-assistant */
+}
+
+/* Chat layout container */
+.chat-window {
+  @apply flex flex-col h-full justify-between;
+}
+
+/* Sidebar styling */
+.sidebar {
+  @apply w-64 border-r p-4;
+  background-color: #f3f4f6; /* bg-gray-100 fallback */
+}
+
+.dark .sidebar {
+  background-color: #111827; /* dark:bg-gray-900 fallback */
+  border-color: #1f2937; /* dark:border-gray-800 */
+}
+
+.sidebar h2 {
+  @apply text-lg font-semibold mb-4;
+}
+
+.sidebar ul li {
+  @apply text-sm cursor-pointer hover:text-blue-500;
+  color: #4b5563; /* text-gray-600 fallback */
+}
+
+.dark .sidebar ul li {
+  color: #d1d5db; /* dark:text-gray-300 fallback */
+}
+
+/* Header */
+.header {
+  @apply p-4 flex justify-between items-center;
+  background-color: #111827; /* bg-gray-900 fallback */
+  color: white;
+}
+
+/* Upload + TextArea + Button input box */
+.chat-input {
+  @apply flex gap-2 items-center px-4 py-3 border-t;
+  background-color: white;
+}
+
+.dark .chat-input {
+  background-color: #1f2937; /* dark:bg-gray-800 */
+  border-color: #374151; /* dark:border-gray-700 */
+}
+
+.upload-btn {
+  @apply px-3 py-2 rounded text-sm cursor-pointer hover:bg-gray-300;
+  background-color: #e5e7eb; /* bg-gray-200 */
+  color: #1f2937; /* text-gray-800 */
+}
+
+.dark .upload-btn {
+  background-color: #374151; /* dark:bg-gray-700 */
+  color: #e5e7eb; /* dark:text-gray-200 */
 }
 
 textarea {
-  @apply resize-none;
+  @apply w-full resize-none text-sm border rounded px-3 py-2;
+  background-color: white;
+  color: #111827; /* text-gray-900 */
+}
+
+.dark textarea {
+  background-color: #374151; /* dark:bg-gray-700 */
+  color: #f3f4f6; /* dark:text-gray-100 */
+  border-color: #4b5563; /* dark:border-gray-600 */
+}
+
+button[type='submit'],
+button.send-btn {
+  @apply px-4 py-2 rounded text-white hover:bg-blue-700 disabled:opacity-50;
+  background-color: #2563eb; /* bg-blue-600 */
+}
+
+/* Loading spinner or pulse text */
+.loading {
+  @apply text-sm italic animate-pulse mt-2;
+  color: #6b7280; /* text-gray-500 */
+}
+
+.dark .loading {
+  color: #9ca3af; /* dark:text-gray-400 */
 }

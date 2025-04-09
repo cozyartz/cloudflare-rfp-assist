@@ -1,11 +1,9 @@
-// src/RFPAssistant.tsx
 import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
-import ThemeToggle from './components/ThemeToggle';
 import MessageInput from './components/MessageInput';
-import './style.css';
+import ThemeToggle from './components/ThemeToggle';
 
-export type Message = {
+type Message = {
   role: 'user' | 'assistant';
   content: string;
 };
@@ -83,32 +81,32 @@ function RFPAssistant() {
       />
 
       <div className="flex flex-col flex-1">
-        <header className="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md">
-          <div className="flex gap-2 items-center">
+        <header className="bg-gray-800 text-white p-4 flex justify-between items-center shadow">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-sm bg-gray-700 px-3 py-1 rounded hover:bg-gray-600"
+              className="text-sm bg-gray-700 px-3 py-1 rounded"
             >
               {sidebarOpen ? 'Hide' : 'Show'} Menu
             </button>
             <ThemeToggle />
           </div>
-          <h1 className="text-xl font-bold">RFP Assistant</h1>
+          <span className="text-lg font-semibold">RFP Assistant</span>
         </header>
 
-        <main className="flex-1 p-6 overflow-y-auto space-y-4">
+        <main className="flex-1 p-6 space-y-4 overflow-y-auto">
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className={`p-3 rounded-lg max-w-3xl ${
-                msg.role === 'user' ? 'ml-auto bg-blue-600' : 'mr-auto bg-green-700'
-              }`}
+              className={`message ${msg.role === 'user' ? 'user' : 'assistant'}`}
             >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              {msg.content}
             </div>
           ))}
           {loading && (
-            <div className="text-gray-400 text-sm animate-pulse">Generating response...</div>
+            <div className="text-sm text-gray-400 animate-pulse">
+              Generating response...
+            </div>
           )}
         </main>
 
