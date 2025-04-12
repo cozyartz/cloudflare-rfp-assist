@@ -1,9 +1,7 @@
+// src/App.tsx
 import React from 'react';
-import RFPAssistant from './RFPAssistant';
-import './style.css';
+import ChatLayout from './components/ChatLayout';
 
-function App() {
-  return <RFPAssistant />;
+export default function App() {
+  return <ChatLayout />;
 }
-
-export default App;

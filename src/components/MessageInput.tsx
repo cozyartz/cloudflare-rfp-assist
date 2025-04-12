@@ -1,49 +1,53 @@
+// src/components/MessageInput.tsx
 import React, { useState } from 'react';
 
 interface MessageInputProps {
-  onSend: (text: string, file: File | null) => Promise<void>;
+  onSend: (text: string, file: File | null) => void;
   loading: boolean;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ onSend, loading }) => {
-  const [text, setText] = useState('');
+export default function MessageInput({ onSend, loading }: MessageInputProps) {
+  const [input, setInput] = useState('');
   const [file, setFile] = useState<File | null>(null);
 
-  const handleSendClick = async () => {
-    await onSend(text, file);
-    setText('');
-    setFile(null);
+  const handleSubmit = () => {
+    if (loading || (!input.trim() && !file)) return;
+    onSend(input, file);
+    setInput('');    // Clear the input field after sending
+    setFile(null);   // Optional: clear file after send
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
   };
 
   return (
-    <footer className="w-full border-t border-gray-200 bg-white dark:bg-gray-900 p-4 flex items-end gap-2">
-      <label className="cursor-pointer px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 text-sm">
-        📎 Upload RFP
-        <input
-          type="file"
-          accept=".pdf,.doc,.docx,.txt"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          style={{ display: 'none' }}
-        />
-      </label>
-
+    <div className="p-4 border-t bg-gray-900 flex gap-2 items-center">
       <textarea
-        rows={2}
-        placeholder="Ask something about this RFP..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        className="flex-1 resize-none px-3 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring focus:border-blue-500"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Type your message..."
+        className="flex-1 resize-none rounded-md border border-gray-700 p-2 bg-gray-800 text-white"
+        rows={1}
+        disabled={loading}
       />
-
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+        className="text-sm text-white"
+        disabled={loading}
+      />
       <button
-        onClick={handleSendClick}
-        disabled={loading || (!text.trim() && !file)}
-        className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+        onClick={handleSubmit}
+        disabled={loading}
+        className="bg-blue-600 text-white px-4 py-2 rounded"
       >
-        {loading ? 'Sending...' : 'Send'}
+        Send
       </button>
-    </footer>
+    </div>
   );
-};
-
-export default MessageInput;
+}
