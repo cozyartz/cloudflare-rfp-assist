@@ -1,34 +1,31 @@
-import { onRequestPost } from 'itty-router';
-import { extractTextFromPdf } from '../lib/extractors/pdf';
-import { extractTextFromDocx } from '../lib/extractors/docx';
+import { onRequestPost } from 'itty-router-openapi';
+import { parsePdf, parseDocx } from '../lib/fileParsers';
 
-export const onRequestPost: PagesFunction = async (context) => {
+export const onRequestPost = async (context) => {
   const formData = await context.request.formData();
-  const file = formData.get('file') as File;
+  const file = formData.get('file');
 
-  if (!file) {
-    return new Response('No file uploaded', { status: 400 });
+  if (!file || typeof file !== 'object') {
+    return new Response('Missing file', { status: 400 });
   }
 
-  const buffer = new Uint8Array(await file.arrayBuffer());
-  const type = file.type || file.name.split('.').pop();
+  const contentType = file.type;
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = new Uint8Array(arrayBuffer);
+  let text = '';
 
   try {
-    let text = '';
-
-    if (type.includes('pdf')) {
-      text = await extractTextFromPdf(buffer);
-    } else if (type.includes('word') || file.name.endsWith('.docx')) {
-      text = await extractTextFromDocx(buffer);
+    if (contentType.includes('pdf')) {
+      text = await parsePdf(buffer);
+    } else if (contentType.includes('word') || file.name.endsWith('.docx')) {
+      text = await parseDocx(buffer);
     } else {
       return new Response('Unsupported file type', { status: 415 });
     }
 
-    return new Response(JSON.stringify({ text }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return Response.json({ text });
   } catch (err) {
-    console.error('Extraction failed:', err);
-    return new Response('Extraction failed', { status: 500 });
+    console.error('File parse error:', err);
+    return new Response('Failed to extract content', { status: 500 });
   }
 };
