@@ -1,7 +1,7 @@
 # Node + pnpm
 node_modules/
-.DS_Store
 pnpm-lock.yaml
+.DS_Store
 
 # Vite build output
 dist/
@@ -22,3 +22,4 @@ dist/
 
 # Misc
 .cache/
+

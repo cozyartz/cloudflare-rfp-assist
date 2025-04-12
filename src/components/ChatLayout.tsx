@@ -1,117 +1,57 @@
-// src/components/ChatLayout.tsx
-import React, { useEffect, useState } from 'react';
-import Sidebar from './Sidebar';
-import MessageInput from './MessageInput';
-
-export interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
+// components/ChatLayout.tsx
+import { useState } from 'react';
+import ChatBubble from './ChatBubble';
 
 export default function ChatLayout() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [activeThread, setActiveThread] = useState('thread-default');
+  const [messages, setMessages] = useState<{ role: 'user' | 'ai'; content: string }[]>([]);
+  const [input, setInput] = useState('');
 
-  // Load chat history from R2 based on the active thread ID
-  const loadChat = async (threadId: string) => {
-    try {
-      const res = await fetch(`/functions/load-chat?threadId=${threadId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setMessages(data);
-      }
-    } catch (err) {
-      console.error('Failed to load chat:', err);
-    }
-  };
+  const sendMessage = async () => {
+    if (!input.trim()) return;
 
-  // Save updated messages list to R2
-  const saveChat = async (threadId: string, messages: Message[]) => {
+    // Add user's message to the UI
+    const newMessages = [...messages, { role: 'user', content: input }];
+    setMessages(newMessages);
+
+    // Send message to Cloudflare Worker
     try {
-      await fetch(`/functions/save-chat`, {
+      const response = await fetch('https://cloudflare-rfp-assist-cozyartz.workers.dev/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ threadId, messages })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: input }),
       });
-    } catch (err) {
-      console.error('Failed to save chat:', err);
-    }
-  };
 
-  // Handle sending user input and optional file
-  const handleSend = async (text: string, file: File | null) => {
-    if (!text.trim() && !file) return;
+      const data = await response.json();
 
-    const userMessage: Message = {
-      role: 'user',
-      content: text.trim() || `Uploaded file: ${file?.name}`
-    };
-
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-    setLoading(true);
-
-    let fileContent = '';
-    if (file) {
-      const arrayBuffer = await file.arrayBuffer();
-      fileContent = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      setMessages([...newMessages, { role: 'ai', content: data.response || 'No response received.' }]);
+    } catch (error) {
+      console.error('Error talking to AI:', error);
+      setMessages([...newMessages, { role: 'ai', content: 'Error contacting AI.' }]);
     }
 
-    const response = await fetch('/functions/run-agent', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        businessContext: 'Cozyartz Media Group',
-        documentContent: fileContent || text,
-        fileName: file?.name,
-        fileType: file?.type
-      })
-    });
-
-    const data = await response.json();
-
-    const assistantMsg: Message = {
-      role: 'assistant',
-      content: data.choices?.[0]?.message?.content || '⚠️ No response received.'
-    };
-
-    const newChat = [...updatedMessages, assistantMsg];
-    setMessages(newChat);
-    setLoading(false);
-    saveChat(activeThread, newChat);
+    setInput('');
   };
-
-  // Force dark mode theme globally
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
-
-  useEffect(() => {
-    loadChat(activeThread);
-  }, [activeThread]);
 
   return (
-    <div className="flex min-h-screen bg-gray-900 text-white">
-      <Sidebar
-        threads={[activeThread]}
-        activeThread={activeThread}
-        onSelectThread={(thread) => {
-          setActiveThread(thread);
-          setMessages([]);
-        }}
-      />
-      <div className="flex flex-col flex-1">
-        <header className="p-4 bg-gray-800 flex justify-between items-center shadow">
-          <span className="text-lg font-semibold">RFP Assistant</span>
-        </header>
-        <main className="flex-1 p-6 overflow-y-auto space-y-4">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`message ${msg.role}`}>{msg.content}</div>
-          ))}
-          {loading && <div className="text-gray-400">Thinking...</div>}
-        </main>
-        <MessageInput onSend={handleSend} loading={loading} />
+    <div className="flex flex-col h-screen p-4">
+      <div className="flex-1 overflow-y-auto space-y-2">
+        {messages.map((msg, idx) => (
+          <ChatBubble key={idx} message={msg.content} from={msg.role} />
+        ))}
+      </div>
+      <div className="mt-4 flex">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          className="flex-1 border border-gray-300 rounded-l px-4 py-2"
+          placeholder="Type your message..."
+        />
+        <button onClick={sendMessage} className="bg-blue-600 text-white px-4 py-2 rounded-r">
+          Send
+        </button>
       </div>
     </div>
   );
