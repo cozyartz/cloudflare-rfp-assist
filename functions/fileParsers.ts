@@ -1,4 +1,4 @@
-import { PDFDocument } from 'pdf-lib';
+import { parsePdf, parseDocx } from '../fileParsers';
 import mammoth from 'mammoth';
 
 export async function parsePdf(buffer: Uint8Array): Promise<string> {

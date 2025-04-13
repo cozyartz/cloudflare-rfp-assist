@@ -1,5 +1,5 @@
 import { onRequestPost } from 'itty-router-openapi';
-import { parsePdf, parseDocx } from '../lib/fileParsers';
+import { parsePdf, parseDocx } from './fileParsers';
 
 export const onRequestPost = async (context) => {
   const formData = await context.request.formData();
