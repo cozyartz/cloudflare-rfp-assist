@@ -1,48 +1,28 @@
-import { useRef } from 'react';
+interface FileUploadProps {
+  onExtracted: (text: string) => void;
+}
 
-export default function FileUpload({ onExtracted }: { onExtracted: (text: string) => void }) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+export default function FileUpload({ onExtracted }: FileUploadProps) {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const formData = new FormData();
     formData.append('file', file);
 
-    try {
-      const res = await fetch('/api/extract-pdf', {
-        method: 'POST',
-        body: formData,
-      });
+    const res = await fetch('/api/extract-content', {
+      method: 'POST',
+      body: formData,
+    });
 
-      const { text } = await res.json();
-      onExtracted(text);
-    } catch (err) {
-      console.error('Error extracting file:', err);
-    } finally {
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
+    const json = await res.json();
+    onExtracted(json.text);
   };
 
   return (
-    <div className="mt-6">
-      <label
-        htmlFor="upload"
-        className="cursor-pointer bg-zinc-700 hover:bg-zinc-600 text-white px-4 py-2 rounded inline-block"
-      >
-        📎 Upload RFP PDF
-      </label>
-      <input
-        ref={fileInputRef}
-        id="upload"
-        type="file"
-        accept=".pdf"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-    </div>
+    <label className="upload-btn cursor-pointer">
+      📎 Upload RFP
+      <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={handleUpload} />
+    </label>
   );
 }

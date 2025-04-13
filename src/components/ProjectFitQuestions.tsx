@@ -1,59 +1,48 @@
-import { useState } from 'react';
-
-interface ProjectFitQuestionsProps {
-  onComplete: (input: {
-    oldQuestion: string[];
-    answers: string[];
-  }) => void;
+interface Props {
+  onComplete: (result: { oldQuestion: string[]; answers: string[] }) => void;
 }
 
-export default function ProjectFitQuestions({ onComplete }: ProjectFitQuestionsProps) {
-  const questions = [
-    'To what extent do we have relevant experience?',
-    'Can we demonstrate past results with clients in this domain?',
-    'Do we have the staff to deliver this type of work?',
-    'Are there pricing references for similar contracts?',
-    'What is our target timeline and who would lead?',
-    'Any key risks that would stop us from submitting?'
-  ];
+const fitQuestions = [
+  'Is this RFP aligned with our services?',
+  'Do we meet the eligibility criteria?',
+  'Can we fulfill the timeline and scope?',
+];
 
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
+export default function ProjectFitQuestions({ onComplete }: Props) {
+  const [answers, setAnswers] = useState<string[]>(Array(fitQuestions.length).fill(''));
 
-  const currentQuery = questions[index];
+  const handleAnswer = (i: number, value: string) => {
+    const next = [...answers];
+    next[i] = value;
+    setAnswers(next);
+  };
 
-  const handleAnswer = (e: any) => {
-    e.preventDefault();
-    const text = e.target.value;
-    setAnswers(prev => [...prev, text]);
-
-    if (index < questions.length - 1) {
-      setIndex(index + 1);
-    } else {
-      onComplete({ oldQuestion: questions, answers });
-    }
+  const handleSubmit = () => {
+    onComplete({ oldQuestion: fitQuestions, answers });
   };
 
   return (
-    <div className="mb-6 p-4">
-      <h3 className="font-medium font-semibold text-white">
-        RFP Fit Evaluation
-      </h3>
-      <p className="text-gray-300 text-sm mb-4">
-        Help gauge fit worthiness with guided questions.
-      </p>
-      {currentQuery && (
-        <div className="my-4 flex flex-col space-y-2">
-          <span className="text-white">{currentQuery}</span>
-          <input
-            type="text"
-            className="bg-gray-100 text-black flex-1 px-3 p-1 rounded"
-            id="answer"
-            onKeyDown={(e) => e.key === 'Enter' && handleAnswer(e)}
-            autoFocus
+    <div className="space-y-4">
+      {fitQuestions.map((q, i) => (
+        <div key={i}>
+          <label className="block mb-1 text-sm font-medium text-gray-300">{q}</label>
+          <textarea
+            className="w-full resize-none text-sm border rounded px-3 py-2 bg-zinc-800 text-white border-zinc-600"
+            value={answers[i]}
+            rows={3}
+            onChange={(e) => handleAnswer(i, e.target.value)}
           />
         </div>
-      )}
+      ))}
+
+      <button
+        type="submit"
+        className="send-btn mt-2"
+        onClick={handleSubmit}
+        disabled={answers.some((a) => !a.trim())}
+      >
+        Submit Answers
+      </button>
     </div>
   );
 }

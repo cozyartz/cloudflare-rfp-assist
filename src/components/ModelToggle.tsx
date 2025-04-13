@@ -1,26 +1,31 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 
-const MODELS = ['cloudflare', 'openai'] as const;
-export type ModelProvider = typeof MODELS[number];
+export type ModelProvider = 'cloudflare' | 'openai';
 
-export default function ModelToggle({
-  onChange,
-  value,
-}: {
-  onChange: (v: ModelProvider) => void;
+interface Props {
   value: ModelProvider;
-}) {
+  onChange: (v: ModelProvider) => void;
+}
+
+export default function ModelToggle({ value, onChange }: Props) {
+  const isCloudflare = value === 'cloudflare';
+
   return (
-    <div className="absolute top-4 right-4 text-sm text-white z-50">
-      <label className="mr-2">AI Model:</label>
-      <select
-        className="bg-gray-800 text-white px-2 py-1 rounded"
-        value={value}
-        onChange={(e) => onChange(e.target.value as ModelProvider)}
-      >
-        <option value="cloudflare">Cloudflare (LLaMA)</option>
-        <option value="openai">OpenAI (GPT)</option>
-      </select>
+    <div className="toggle-container">
+      <input
+        type="checkbox"
+        id="ai-toggle"
+        className="toggle-checkbox"
+        checked={isCloudflare}
+        onChange={() => onChange(isCloudflare ? 'openai' : 'cloudflare')}
+      />
+      <label htmlFor="ai-toggle" className="toggle-label">
+        <span className="toggle-ball" />
+        <span className="toggle-labels">
+          <span>GPT</span>
+          <span>LLaMA</span>
+        </span>
+      </label>
     </div>
   );
 }
