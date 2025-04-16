@@ -1,4 +1,12 @@
+import React, { useRef } from 'react';
+
+interface FileUploadProps {
+  onExtracted: (text: string) => void;
+}
+
 export default function FileUpload({ onExtracted }: FileUploadProps) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -16,21 +24,15 @@ export default function FileUpload({ onExtracted }: FileUploadProps) {
   };
 
   return (
-    <div className="mt-6">
-      <label
-        htmlFor="upload"
-        className="cursor-pointer bg-zinc-700 hover:bg-zinc-600 text-white px-4 py-2 rounded inline-block"
-      >
-        📎 Upload RFP PDF
-      </label>
+    <label className="upload-btn cursor-pointer">
+      📎 Upload RFP
       <input
         ref={fileInputRef}
-        id="upload"
         type="file"
-        accept=".pdf"
         className="hidden"
-        onChange={handleFileChange}
+        accept=".pdf,.doc,.docx"
+        onChange={handleUpload}
       />
-    </div>
+    </label>
   );
 }

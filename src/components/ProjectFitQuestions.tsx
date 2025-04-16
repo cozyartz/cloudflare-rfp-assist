@@ -1,3 +1,4 @@
+import { useState } from 'react';
 interface Props {
   onComplete: (result: { oldQuestion: string[]; answers: string[] }) => void;
 }
